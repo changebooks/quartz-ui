@@ -1,0 +1,61 @@
+server:
+  port: 9091
+  servlet:
+    context-path: /
+  tomcat:
+    uri-encoding: UTF-8
+    max-connections: 2000
+    # 最大等待队列
+    accept-count: 200
+    threads:
+      # 最大线程
+      max: 200
+      # 初始线程
+      min-spare: 20
+
+spring:
+  application:
+    name: quartz-ui
+  messages:
+    basename: i18n/messages
+  aop:
+    proxy-target-class: true
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+    serialization.write-dates-as-timestamps: false
+  thymeleaf:
+    mode: HTML5
+    encoding: UTF-8
+    cache: false
+    suffix: .html
+    prefix: classpath:/templates/
+  quartz:
+    job-store-type: jdbc
+    overwrite-existing-jobs: true
+    auto-startup: true
+    properties:
+      org:
+        quartz:
+          scheduler:
+            instanceName: DefaultQuartzScheduler
+            instanceId: AUTO
+          jobStore:
+            class: org.quartz.impl.jdbcjobstore.JobStoreTX
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+            tablePrefix: QRTZ_
+            isClustered: false
+            useProperties: false
+            dataSource: default
+          dataSource:
+            default:
+              driver: com.mysql.cj.jdbc.Driver
+              URL: jdbc:mysql://127.0.0.1:3306/quartz?characterEncoding=utf-8&useSSL=false&useTimezone=true&serverTimezone=Asia/Shanghai
+              user: root
+              password: 123456
+              maxConnections: 10
+          threadPool:
+            class: org.quartz.simpl.SimpleThreadPool
+            threadCount: 20
+            threadPriority: 5
+            threadsInheritContextClassLoaderOfInitializingThread: true

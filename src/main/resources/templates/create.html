@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>新建任务</title>
+    <style type="text/css">
+        [v-cloak] {
+            display: none
+        }
+
+        em {
+            display: block;
+            float: left;
+            width: 128px;
+            height: 24px;
+            line-height: 24px;
+            font-style: normal;
+        }
+
+        input {
+            width: 480px;
+            height: 24px;
+        }
+
+        button {
+            width: 128px;
+            height: 32px;
+        }
+
+        #tips {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+<noscript></noscript>
+<div><a href="/index">任务列表</a></div>
+<br/>
+<br/>
+<div>
+    <strong id="tips"></strong>
+</div>
+<br/>
+<div>
+    <em>分组：</em>
+    <label>
+        <input type="text" name="group"/>
+    </label>
+</div>
+<br/>
+<div>
+    <em>名称：</em>
+    <label>
+        <input type="text" name="name"/>
+    </label>
+</div>
+<br/>
+<div>
+    <em>描述：</em>
+    <label>
+        <input type="text" name="description"/>
+    </label>
+</div>
+<br/>
+<div>
+    <em>请求接口：</em>
+    <label>
+        <input type="text" name="url"/>
+    </label>
+</div>
+<br/>
+<div>
+    <em>时间表达式：</em>
+    <label>
+        <input type="text" name="cronExpression"/>
+    </label>
+</div>
+<br/>
+<div>
+    <em></em>
+    <label>
+        <button name="submit">新建任务</button>
+    </label>
+</div>
+<script type="text/javascript" src="query.js?v=1.1"></script>
+<script type="text/javascript" src="ajax.js?v=1.1"></script>
+<script type="text/javascript">
+    Query.form("button", "submit").onclick = function () {
+        let tipsObj = Query.$("tips");
+        tipsObj.innerText = "";
+
+        let parameter = {
+            name: Query.form("input", "name").value,
+            group: Query.form("input", "group").value,
+            description: Query.form("input", "description").value,
+            url: Query.form("input", "url").value,
+            cronExpression: Query.form("input", "cronExpression").value
+        };
+
+        Ajax.post({
+            url: "/task/create",
+            parameter: parameter,
+            success: function (data) {
+                tipsObj.innerText = data ? "Success" : "Failure";
+            },
+            error: function (code, message) {
+                console.error("create failed, code: " + code + ", message: " + message);
+                tipsObj.innerText = message;
+            }
+        });
+    };
+</script>
+</body>
+</html>

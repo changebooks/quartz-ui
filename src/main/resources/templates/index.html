@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>任务列表</title>
+    <style type="text/css">
+        [v-cloak] {
+            display: none
+        }
+
+        select {
+            width: 256px;
+            height: 32px;
+        }
+    </style>
+</head>
+<body>
+<noscript></noscript>
+<div><a href="/create">新建任务</a></div>
+<br/>
+<br/>
+<div>
+    分组：
+    <select name="group">
+        <option value="">-- 选择分组 --</option>
+        <option th:each="group : ${groupList}" th:value="${group}" th:text="${group}"
+                th:selected="${group == selectedGroup}"></option>
+    </select>
+</div>
+<br/>
+<div>
+    <table border="1" bordercolor="#ddd" cellspacing="0" cellpadding="8">
+        <thead>
+        <tr>
+            <th>分组</th>
+            <th>名称</th>
+            <th>描述</th>
+            <th>请求接口</th>
+            <th>时间表达式</th>
+            <th>当前状态</th>
+            <th>上次执行时间</th>
+            <th>下次执行时间</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="task : ${taskList}">
+            <td th:text="${task.group}"></td>
+            <td th:text="${task.name}"></td>
+            <td th:text="${task.description}"></td>
+            <td th:text="${task.url}"></td>
+            <td th:text="${task.cronExpression}"></td>
+            <td th:text="${task.state}"></td>
+            <td th:text="${#dates.format(task.prevTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+            <td th:text="${#dates.format(task.nextTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+            <td><a th:href="@{'javascript:onRemove(\'' + ${task.name} + '\', \'' + ${task.group} + '\');'}">删除</a></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<script type="text/javascript" src="query.js?v=1.1"></script>
+<script type="text/javascript" src="ajax.js?v=1.1"></script>
+<script type="text/javascript">
+    function onReload(group) {
+        if (group !== undefined && group !== "") {
+            window.location.href = "/index?group=" + group;
+        }
+    }
+
+    function onRemove(name, group) {
+        let message = "删除【" + group + "." + name + "】！";
+        if (confirm(message)) {
+            Ajax.delete({
+                url: "/task/delete",
+                parameter: "name=" + name + "&group=" + group,
+                success: function (data) {
+                    if (data) {
+                        onReload(group);
+                    } else {
+                        alert("删除失败！");
+                    }
+                },
+                error: function (code, message) {
+                    console.error("remove failed, code: " + code + ", message: " + message);
+                    alert(message);
+                }
+            });
+        }
+    }
+
+    Query.form("select", "group").onchange = function () {
+        onReload(Query.form("select", "group").value);
+    };
+</script>
+</body>
+</html>
